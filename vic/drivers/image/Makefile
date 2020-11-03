@@ -38,6 +38,9 @@ SHAREDIMAGEPATH = ../shared_image
 # VIC RUN PATH
 VICPATH = ../../vic_run
 
+# AMBHAS PATH
+AMBHASPATH=../../../../AMBHAS
+
 ifndef NC_LIBS
 NC_LIBS = $(shell nc-config --libs)
 endif
@@ -65,13 +68,14 @@ HOSTNAME := $(shell uname -n)
 # | WARNING   | < 30             |
 # | INFO      | < 20             |
 # | DEBUG     | < 10             |
-LOG_LVL = 5
+LOG_LVL = 50
 
 # set includes
 INCLUDES = -I ${DRIVERPATH}/include \
 		   -I ${VICPATH}/include \
 		   -I ${SHAREDPATH}/include \
-		   -I ${SHAREDIMAGEPATH}/include
+		   -I ${SHAREDIMAGEPATH}/include \
+		   -I ${AMBHASPATH}		
 
 # Uncomment to include debugging information
 CFLAGS  =  ${INCLUDES} ${NC_CFLAGS}  -ggdb -O0 -Wall -Wextra -std=c99 \
@@ -79,6 +83,7 @@ CFLAGS  =  ${INCLUDES} ${NC_CFLAGS}  -ggdb -O0 -Wall -Wextra -std=c99 \
 					 -DGIT_VERSION=\"$(GIT_VERSION)\" \
 					 -DUSERNAME=\"$(USER)\" \
 					 -DHOSTNAME=\"$(HOSTNAME)\"
+
 
 ifeq (true, ${TRAVIS})
 # Add extra debugging for builds on travis
@@ -98,13 +103,15 @@ HDRS = \
 	$(wildcard ${VICPATH}/include/*.h) \
 	$(wildcard ${DRIVERPATH}/include/*.h) \
 	$(wildcard ${SHAREDPATH}/include/*.h) \
-	$(wildcard ${SHAREDIMAGEPATH}/include/*.h)
+	$(wildcard ${SHAREDIMAGEPATH}/include/*.h) \
+	$(wildcard ${AMBHASPATH}/*.h)
 
 SRCS = \
 	$(wildcard ${VICPATH}/src/*.c) \
 	$(wildcard ${DRIVERPATH}/src/*.c) \
 	$(wildcard ${SHAREDPATH}/src/*.c) \
-	$(wildcard ${SHAREDIMAGEPATH}/src/*.c)
+	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \
+	$(wildcard ${AMBHASPATH}/*.c)
 
 OBJS = $(SRCS:%.o=%.c)
 
@@ -127,7 +134,7 @@ clean::
 	\rm -rf ${COMPEXE}${EXT} ${COMPEXE}${EXT}.dSYM
 
 model: $(OBJS)
-	$(MPICC) -o ${COMPEXE}${EXT} $(OBJS) $(CFLAGS) $(LIBRARY)
+	$(MPICC) -g -o ${COMPEXE}${EXT} $(OBJS) $(CFLAGS) $(LIBRARY)
 
 # -------------------------------------------------------------
 # tags

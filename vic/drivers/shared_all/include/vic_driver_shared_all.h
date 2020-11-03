@@ -279,6 +279,16 @@ enum
     OUT_CLITTER,          /**< Carbon density in litter pool [g C/m2] */
     OUT_CINTER,           /**< Carbon density in intermediate pool [g C/m2] */
     OUT_CSLOW,            /**< Carbon density in slow pool [g C/m2] */
+    //AMBHAS terms
+    OUT_RECHARGE,         /**< groundwater recharge out of the bottom layer  [mm] */
+    OUT_GW_INFLOW,         /**< groundwater inflow into the bottom layer  [mm] */
+    OUT_BASEFLOW_AQ,      /**< baseflow from the aquifer  [mm] */
+    OUT_Z,      	        /**< water table depth from AMBHAS [mm] */
+    OUT_Q1,      	        /**< flux out of the top layer [mm]*/
+    OUT_Q2,      	        /**< flux out of the second layer [mm] */
+    OUT_SY,      	        /**< specific yield of aquifer [] */
+	
+
     // Timing and Profiling Terms
     OUT_TIME_VICRUN_WALL, /**< Wall time spent inside vic_run [seconds] */
     OUT_TIME_VICRUN_CPU,  /**< Wall time spent inside vic_run [seconds] */

@@ -52,29 +52,34 @@ enum
  *           identical. The model is run over a list of cells.
  *****************************************************************************/
 typedef struct {
-    bool run; /**< TRUE: run grid cell. FALSE: do not run grid cell */
-    double latitude; /**< latitude of grid cell center */
-    double longitude; /**< longitude of grid cell center */
-    double area; /**< area of grid cell */
-    double frac; /**< fraction of grid cell that is active */
-    size_t nveg; /**< number of vegetation type according to parameter file */
-    size_t global_idx; /**< index of grid cell in global list of grid cells */
-    size_t io_idx; /**< index of cell in 1-D I/O arrays */
-    size_t local_idx; /**< index of grid cell in local list of grid cells */
+  bool run; /**< TRUE: run grid cell. FALSE: do not run grid cell */
+  double latitude; /**< latitude of grid cell center */
+  double longitude; /**< longitude of grid cell center */
+  double area; /**< area of grid cell */
+  double frac; /**< fraction of grid cell that is active */
+  size_t nveg; /**< number of vegetation type according to parameter file */
+  size_t global_idx; /**< index of grid cell in global list of grid cells */
+  size_t io_idx; /**< index of cell in 1-D I/O arrays */
+  size_t local_idx; /**< index of grid cell in local list of grid cells */
+  int A_nlat; /**< counter in AMBHAS grid in lat or crow */
+  int A_nlon; /**< counter in AMBHAS grid in lon or ccol */   
+  double Sy;	/**< aquifer specific yield [1/m] from AMBHAS **/
+  double z;	/**< depth to the water table in m: DEM-hydraulic head from AMBHAS **/
+  double Kaq; /**< aquifer hydraulic conductivity **/
 } location_struct;
 
 /******************************************************************************
  * @brief    Structure to store information about the domain file.
  *****************************************************************************/
 typedef struct {
-    char lat_var[MAXSTRING]; /**< latitude variable name in the domain file */
-    char lon_var[MAXSTRING];  /**< longitude variable name in the domain file */
-    char mask_var[MAXSTRING]; /**< mask variable name in the domain file */
-    char area_var[MAXSTRING]; /**< area variable name in the domain file */
-    char frac_var[MAXSTRING]; /**< fraction variable name in the domain file */
-    char y_dim[MAXSTRING]; /**< y dimension name in the domain file */
-    char x_dim[MAXSTRING]; /**< x dimension name in the domain file */
-    size_t n_coord_dims; /**< number of x/y coordinates */
+  char lat_var[MAXSTRING]; /**< latitude variable name in the domain file */
+  char lon_var[MAXSTRING];  /**< longitude variable name in the domain file */
+  char mask_var[MAXSTRING]; /**< mask variable name in the domain file */
+  char area_var[MAXSTRING]; /**< area variable name in the domain file */
+  char frac_var[MAXSTRING]; /**< fraction variable name in the domain file */
+  char y_dim[MAXSTRING]; /**< y dimension name in the domain file */
+  char x_dim[MAXSTRING]; /**< x dimension name in the domain file */
+  size_t n_coord_dims; /**< number of x/y coordinates */
 } domain_info_struct;
 
 /******************************************************************************
@@ -82,12 +87,12 @@ typedef struct {
  *           model is run on a single processor, then the two are identical.
  *****************************************************************************/
 typedef struct {
-    size_t ncells_total; /**< total number of grid cells on domain */
-    size_t ncells_active; /**< number of active grid cells on domain */
-    size_t n_nx; /**< size of x-index; */
-    size_t n_ny; /**< size of y-index */
-    location_struct *locations; /**< locations structs for local domain */
-    domain_info_struct info; /**< structure storing domain file info */
+  size_t ncells_total; /**< total number of grid cells on domain */
+  size_t ncells_active; /**< number of active grid cells on domain */
+  size_t n_nx; /**< size of x-index; */
+  size_t n_ny; /**< size of y-index */
+  location_struct *locations; /**< locations structs for local domain */
+  domain_info_struct info; /**< structure storing domain file info */
 } domain_struct;
 
 /******************************************************************************
