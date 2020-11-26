@@ -39,7 +39,7 @@ SHAREDIMAGEPATH = ../shared_image
 VICPATH = ../../vic_run
 
 # AMBHAS PATH
-AMBHASPATH=../../../../AMBHAS
+AMBHASPATH=../../extensions/AMBHAS
 
 ifndef NC_LIBS
 NC_LIBS = $(shell nc-config --libs)
