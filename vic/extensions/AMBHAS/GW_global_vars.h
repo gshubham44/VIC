@@ -28,7 +28,7 @@
 		char hininame[100]; //Filename of hini
 		char gwname[100]; //Filename of groundwater parameter file
 		int VARIABLE_SY;//flag wether Sy has a different value in the soil
-		int MAX_RECHARGE_FRACTION; //fraction of total available moisture in the soil layer the water table is in interaction with that can recharge the aquifer in one time step 
+		float MAX_RECHARGE_FRACTION; //fraction of total available moisture in the soil layer the water table is in interaction with that can recharge the aquifer in one time step 
 	} gw_global_data_struct;
 
 

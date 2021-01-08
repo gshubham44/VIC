@@ -112,7 +112,7 @@ runoff(cell_data_struct  *cell,
     extern int IRRIGATE_ABSTRACTED_WATER;
     
 
-	printf("max recharge fraction %f  \n", MAX_RECHARGE_FRACTION);
+	//printf("max recharge fraction %f  \n", MAX_RECHARGE_FRACTION);
    
    //don't print anything 
     RUNOFF_PRINT_FLAG=0;

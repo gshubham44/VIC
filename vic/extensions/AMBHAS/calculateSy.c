@@ -35,9 +35,9 @@ int calculateSy(const gw_data_struct * d, gw_param_struct *p){
 			  
 				else{
 					p->Sy[crow][ccol]=((d->Sy_aq[crow][ccol] -d->Sy_soil[crow][ccol])/d->z_soil[crow][ccol])
-					*(d->dem[crow][ccol]-p->h[crow][ccol]-d->z_soil[crow][ccol])+d->Sy_soil[crow][ccol];
+					*(-d->dem[crow][ccol]+p->h[crow][ccol]-d->z_soil[crow][ccol])+d->Sy_soil[crow][ccol];
 
-				}        
+				}         
 			}
 			 //if outside the mask, set to Sy_aq
 			else if((d->mask[crow][ccol]!=1.0)){
