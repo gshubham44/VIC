@@ -545,50 +545,79 @@ main(int    argc,
 						printf("GW_read_1pumping has been called \n");
 					}
 				}
-		
-				//calculate gw flow for one time step
-				balance=calculateGwFlow(g,d,p,ts, cts);
-				if (debug == 1){
-						printf("calculateGwFlow has been called \n");
-				}
+      }// end if sim mode...
+      
+      //if steady state - use the first pumping time step
+ 			if(g->SIM_MODE==0){
+					
+				//read in time series for pumping	
+				if(g->PUMPING == 1){
 
-				if(g->OUT_OPTION == 0){
-									   
-					//write out head at every time step
-					GW_write_output(g,d,p,(int)current);
+					GW_read_1pumping(g, d, dmy[0].year,dmy[0].month, dmy[0].day,dmy[0].dayseconds);
+					if (debug == 1){
+						printf("GW_read_1pumping has been called \n");
+					}
+				}
+        
+ 			}// end if sim mode...
+      
+      //if dynamic steady state - use the first year of pumping data
+ 			if(g->SIM_MODE==3){
+					
+				//read in time series for pumping	
+				if(g->PUMPING == 1){
+
+					GW_read_1pumping(g, d, dmy[current].year,dmy[0].month, dmy[current].day,dmy[current].dayseconds);
+					if (debug == 1){
+						printf("GW_read_1pumping has been called \n");
+					}
+				}
+        
+ 			}// end if sim mode...
+		
+			//calculate gw flow for one time step
+			balance=calculateGwFlow(g,d,p,ts, cts);
+			if (debug == 1){
+					printf("calculateGwFlow has been called \n");
+			}
+
+			if(g->OUT_OPTION == 0){
+								   
+				//write out head at every time step
+				GW_write_output(g,d,p,(int)current);
+				if (debug == 1){
+					printf("GW_write_output has been called \n");
+				}
+			}
+			if(g->OUT_OPTION>1){              
+				if((int)current % g->OUT_OPTION==0)
+		
+				//write out head at every OUT_OPTION time step
+				{
+					GW_write_output(g,d,p, (int)current);
 					if (debug == 1){
 						printf("GW_write_output has been called \n");
 					}
+
 				}
-				if(g->OUT_OPTION>1){              
-					if((int)current % g->OUT_OPTION==0)
+			}
+		
+			//create time series output file
+			if((int)current ==0){
+				writeObsBH(g,ts, 0, 1, 1);
+				
+			}	
+
+	  
+				//write time series data every g->NTIME time step
+			if(((int)current+1) % g->NTIME==0){
+				if((int)current>0){
+					writeObsBH(g,ts, (int)current-g->NTIME, g->NTIME, 4);
+					cts=-1;
+				}
+			}
+
 			
-					//write out head at every OUT_OPTION time step
-					{
-						GW_write_output(g,d,p, (int)current);
-						if (debug == 1){
-							printf("GW_write_output has been called \n");
-						}
-
-					}
-				}
-			
-				//create time series output file
-				if((int)current ==0){
-					writeObsBH(g,ts, 0, 1, 1);
-					
-				}	
-
-		  
-					//write time series data every g->NTIME time step
-				if(((int)current+1) % g->NTIME==0){
-					if((int)current>0){
-						writeObsBH(g,ts, (int)current-g->NTIME, g->NTIME, 4);
-						cts=-1;
-					}
-				}
-
-			}// end if sim mode...
 
 			get_AMBHAS_Output_Into_VIC(d, p, &global_domain, outp_baseflow, outp_z, outp_sy);
 				
