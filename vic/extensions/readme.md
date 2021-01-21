@@ -1,79 +1,133 @@
-VIC-AMBHAS User Manual
-#######################
+# VIC-AMBHAS User Manual
 
-Introduction
+## Introduction
+
 This documents describes the input files for the coupled VIC-AMBHAS model. AMBHAS is a 2D lateral groundwater model and is built into the image version of VIC 5.0.1. VIC calculates a groundwater recharge as a function of soil moisture and water table depth and passes this into AMBHAS. AMBHAS calculates lateral groundwater flow, groundwater baseflow and interacts with the land surface. AMBHAS feeds back the water table depth and groundwater baseflow to VIC. There is also an option of abstracting groundwater from the aquifer, specified through model input. The model can be run in a dynamic steady state, using one year of forcing data or as time-variant. 
 This version of VIC will only work as the coupled version of VIC-AMBHAS, and only with the image version of VIC.
 To run the standard version of VIC without the addition of groundwater, please use the version directly from the VIC repository: https://github.com/UW-Hydro/VIC.
 If you make use of this model, please acknowledge Scheidegger et al, submitted, and the VIC papers: Hamman et al., 2018 (DOI:10.5194/gmd-11-3481-2018) and Liang et al., 1994 (http://dx.doi.org/10.1029/94jd00483).
 
+## Preparation of input files
 
-Preparation of input files
-##########################
+### VIC input files
 
-VIC input files
-##########################
 The VIC model inputs consists of a global parameter file, meteorological forcing files, a parameter file and a domain file.  The global parameter file is the main input file and points to the location of the parameter, forcing and domain files, as well as setting model timings and output options. The meteorological forcing file, parameter file and domain file are spatially distributed files in netcdf format. Description, structure and format of each of them is described in the VIC image driver documentation (https://vic.readthedocs.io/en/master/Documentation/Drivers/Image/Inputs/). 
 The input files for the coupled VIC-AMBHAS describing the land surface, model domain, and forcing are unaltered from the original VIC input files. However, since the baseflow formulation in VIC is replaced with the groundwater recharge calculation, the parameters Ds, Dsmax, Ws and c are not used in the model, but dummy values need to be set.
 
-AMBHAS input files
-##########################
-The input files for the groundwater model consist of a global parameter file, groundwater data file, initial hydraulic heads filed, and a file describing the observation points.
+### AMBHAS input files
 
-Global parameter file
-##########################
-The global parameter file specifies the model dimension, the number of rows (NROW), columns (NCOL) and time steps (NTIME).The cell size of latitudes (y), longitudes (x) are given in DLAT and DLON, and the time step in days is DT. DLAT and DLON can either be in degree or in m, however the spacing in lat/lon or km is regular.
-There are several output options for the hydraulic head field to the netcdf file h_n.nc, where n is the time step.
-	0: hydraulic head field is written to out every time step
-	1: hydraulic head field is only written out for the last time step
+The input files for the groundwater model consist of:
+- global parameter file
+
+- groundwater data file
+
+- initial hydraulic heads filed
+
+- file describing the observation points
+
+#### Global parameter file
+
+The global parameter file specifies spatial and temporal model parameters related to the model grid and the time stepping and frequency of output to be written. 
+In addition, the filenames of the groundwater data file, the initial heads are specified here. 
+Model options, such as whether hydraulic conductivity or transmissivity are read in, whether groundwater abstraction takes place and if the specific yield is different in the soil and the aquifer are given.
+
+The first string of the input file of each line specifies the parameter, followed by one or two parameters as follows:
+
+0. Name of the file containing the spatially distributed groundwater data. E.g. gw_data.nc
+1. Number of rows (NROW) in the groundwater parameter file. If the VIC model domain has no border of NA, then NROW should extend this on either side of the model domain. If the VIC domain contains one row and column of NA around the model domain, NROW in AMBHAS is equal to NROW in VIC.
+2. Number of columns (NCOL) in the groundwater parameter file. If the VIC model domain has no border of NA, then NCOL should extend this on either side of the model domain. If the VIC domain contains one row and column of NA around the model domain, NCOL in AMBHAS is equal to NCOL in VIC.
+3. Interval of NTIME when AMBHAS model output is written to file.
+4. Cell size in y. If the model grid is in lat/lon the cell size in lat is given (DLAT), if it is a metric grid, then the cell size in m is given. The spacing for both needs to be regular.
+5. Cell size in x. If the model grid is in lat/lon the cell size in lon is given (DLON), if it is a metric grid, then the cell size in m is given. The spacing for both needs to be regular.
+6. Length of each model time step (DT) in unit of days. This needs to be the same as in VIC.
+7. Output options for the hydraulic head field to the netcdf file h_n.nc, where n is the time step:
+	0: hydraulic head field is written to out every time step	
+	
+	1: hydraulic head field is only written out for the last time step	
+	
 	n: hydraulic head field is written out every n time steps
-The model can be run in several simulation modes: 
-
-Simulation Mode: 
-  0: dynamic steady state using the forcing data of the first year and pumping of the first time step, 
-  1: transient simulation
-  3: dynamic steady state using the forcing data of the first year and pumping of the first year, 
-
-As a default, the hydraulic heads for the initial conditions will be set to DEM-10. Otherwise, a hydraulic head distribution can be read in as a file if restart is set to 1. The filename and path have to be specified
-
-It must be specified whether hydraulic conductivity in m/day or Transmissivity in m2/day is read in.
-
-It must be specified whether the model is run as confined or unconfined model. If the model is unconfined, then hydraulic conductivity has to be read in.
-
-It must be specified whether the grid is in m or in lat/lon. If the grid is in lat/lon, then the cell dimensions and area for each cell need to be read in gw_data.nc
-
-The pumping flag determines whether groundwater pumping time series are read in.
+	
+8. Simulation Mode: 
+  0: dynamic steady state using the forcing data of the first year and pumping of the first time step
+  
+  1: transient simulation 
+  
+  3: dynamic steady state using the forcing data of the first year and pumping of the first year
+  
+9. Initial conditions for hydraulic head.
+	0: DEM - 10m. No initial head file needs to be specified
+	
+	1: file for initial hydraulic heads is read in specified as filename.nc	
+	
+10. Option if hydraulic conductivity or transmissivity are read in.
+	0: K [m/day]	
+	
+	1: T [m2/day]
+	
+11. Confined or unconfined aquifer. Regardless of choice, the soil and the aquifer are in connection. This defines if the transmissivity is calculated using the K * aquifer thickness or K *(head - the base of the aquifer).
+	0: unconfined
+	
+	1: confined	
+	
+12. Flag, if the model dimensions are in m or decimal degrees. If the grid is in lat/lon, then the cell dimensions and area for each cell need to be read in gw_data.nc.
+	0: Regular grid using m	
+	
+	1: Regular grid using decimal degrees. The cell dimensions for each cell need to be read in gw_data.nc	
+	
+13. The pumping flag determines whether groundwater pumping time series are read in
   0: no pumping time series is read in 
-  1: pumping time series is read in
   
-A stress period for which the pumping is applied is specified as multiple of the time step DT
+  1: pumping time series is read in 
   
-The specific yield can have one value in the soil and one value in the aquifer with a linear transition to twice the soil depth.
-  0: one value of Sy
-  1: Sy has one value in the soil and one in the aquifer
+14. Stress period for which one pumping file is valid. This has to be a multiplier of DT
+15. Flag if the specific yield varies between the soil and the aquifer
+  0: one value of Sy across the entire profile read in gw_data.nc 
   
-The maximum recharge from the soil to the aquifer is limited to a fraction of total available water in the layer the water table is interaction with for one time step. This improves stability within the model when the water table is close to the soil layer.
+  1: Sy has one value in the soil and one in the aquifer, with a linear transition to twice the soil thickness. The values to be read in gw_data.nc. 
+  
+16. The maximum recharge from the soil to the aquifer is limited to a fraction of total available water in the layer the water table is interaction with for one time step. This improves stability within the model when the water table is close to the soil layer. Usually, values between 0.01 and 0.1 work.
+
+
 
 Example file: gw_global_parameters.dat
+
 GW_PAM_NAME gw_data_1.nc
+
 NROW 100
+
 NCOL 200
+
 NTIME 240
+
 DLAT 0.05
+
 DLON 0.05
+
 DT 0.125
+
 Outoption 28800
+
 SimulationMode 1
+
 Restart 1 ../Folder/file_name.nc
+
 K/Trans 0
+
 CONFINED 0
+
 GRID 1
+
 PUMPING 0
+
 PUMPING_STRESS_PERIOD 240
+
 VARIABLE_SY 1
+
 MAX_RECHARGE_FRACTION 0.01
 
+
 ---Comment below here---
+
 0. groundwater parameter file name
 1. number of rows (lat) 
 2. number of cols (rows) 
@@ -92,74 +146,94 @@ MAX_RECHARGE_FRACTION 0.01
 15. 1: Sy has one value in the soil and one in the aquifer. Depth of the soil and Sy_soil are read in in the gw_data.nc file
 16. The maximum recharge from the soil to the aquifer is limited to a fraction of total available water in the layer the water table is interaction with for one time step. This improves stability within the model.
 
-Observation boreholes
-##########################
-Observation boreholes can be specified, for which the hydraulic head value for every time step will be recorded.
-The first line gives the number of boreholes. The subsequent lines specify a borehole name and their latitude and longitude.
+
+#### Observation boreholes
+
+Observation boreholes can be specified, for which the hydraulic head value for every NTIME time step will be recorded.
+
+The first line gives the number of boreholes. 
+
+The subsequent lines specify a borehole name and their latitude and longitude.
 
 Example file: gw_observation.dat
+
 num_obs_bh 2
+
 BH1 6500.0 2000.0
+
 BH2 8500.0 2000.0
 
 ---Comment below here---
+
 1. number of observation boreholes
 2. lat lon of observation boreholes 1
 3. lat lon of observation boreholes 2
 
-Spatial model data
-##########################
-The spatial model data is read in via the netcdf file gw_data.nc. 
-The data for each cell required is:
-	Sy [-]: specific yield 
-	T [m2/day]: transmissivity – a value must be given, even if K is specified
-	K [m/day]: hydraulic conductivity – a value must be given, even if T is spcified
-	mask: active cells of the model domain are set to 1
-	dem [m]: digital elevation model 
-	zbase [m]: base of the aquifer in m above datum 
-	zriver [m]: elevation of the river elevation, e.g DEM 
-	driver [m]: thickness of the river bed, e.g. 1m
-	C_eff [1/day]: Conductance for effluent aquifer (river-> aquifer) 
-	C_in [1/day]: Conductance for influent aquifer (aquifer -> river) 
-	C_leak_eff [1/day]: Conductance for leakage cells effluent 
-	C_leak_in [1/day]: Conductance for leakage cells influent 
-	headBC : Head[m] of specific head boundary cells, or -999 for non-specified head boundary nodes 
-	river_area [m2]:  River area of cells where a river is present
-	aquifer_map: zones of 1 are unconfined aquifer, and zones of 0 are confined aquifer
-if the model dimensions is in lat/lon, then the following needs to be specified:
-	dist_c_n [m]: distance of the cell center to the cell center of the cell to the north 
-	dist_c_e [m]: distance of the cell center to the cell center of the cell to the east 
-	edge_n[m]: length of the northern edge of the cell 
-	edge_e [m]: length of the eastern edge of the cell 
-	cell_area [m2]: cell area of each cell in 
-  	z_soil  [m]: total soil depth used in the VIC model
-  	Sy_soil: specific yield of the soil as used in the VIC model[-]
-	
-GW pumping - optional
-##########################
 
-One file per time step is read in. The filename is gw_pumping_DAY_MONTH_YEAR_SECONDS.nc, for which the date is specified in integers. 
+#### Spatial model data
+
+The spatial model data is read in via the netcdf file gw_data.nc. The variables are written to file in the order listed below.
+
+The data for each cell required is:
+	- Sy [-]: specific yield 
+	- T [m2/day]: transmissivity – a value must be given, even if K is specified
+	- K [m/day]: hydraulic conductivity – a value must be given, even if T is spcified
+	- mask: active cells of the model domain are set to 1
+	- dem [m]: digital elevation model 
+	- zbase [m]: base of the aquifer in m above datum 
+	- zriver [m]: elevation of the river elevation, e.g DEM or DEM - 5
+	- driver [m]: thickness of the river bed, e.g. 1m
+	- C_eff [1/day]: Conductance for effluent aquifer (river-> aquifer) 
+	- C_in [1/day]: Conductance for influent aquifer (aquifer -> river)
+	- C_leak_eff [1/day]: Conductance for leakage cells effluent 	
+	- C_leak_in [1/day]: Conductance for leakage cells influent 	
+	- headBC : Head[m] of specific head boundary cells, or -999 for non-specified head boundary nodes 
+	- river_area [m2]:  River area of cells where a river is present	
+	- aquifer_map: zones of 1 are unconfined aquifer, and zones of 0 are confined aquifer
+	
+if the model dimensions is in lat/lon, then the following needs to be specified:
+	- dist_c_n [m]: distance of the cell center to the cell center of the cell to the north 	
+	- dist_c_e [m]: distance of the cell center to the cell center of the cell to the east 	
+	- edge_n[m]: length of the northern edge of the cell 	
+	- edge_e [m]: length of the eastern edge of the cell 	
+	- cell_area [m2]: cell area of each cell in 
+
+for each cell:		
+	- z_soil  [m]: total soil depth used in the VIC model	
+	- Sy_soil: specific yield of the soil as used in the VIC model[-]
+	
+	
+### GW pumping - optional
+
+One file every PUMPING_STRESS_PERIOD is read in. 
+
+The filename is gw_pumping_DAY_MONTH_YEAR_SECONDS.nc, for which the date is specified in integers. 
+
 The stress period read in through the global parameter file determines how often GW pumping is read in.
+
 The data for each cell and time step required is:
+
 	Pumping [m3/day]
 
 
-Output files
-##########################
+## Output files
 
-Observation data
-##########################
+
+### Observation data
+
 The file gw_observation_ts.out record the hydraulic head for each observation borehole and time step. The coordinates (lat/lon) of each borehole are given in the header.
 
-Hydraulic head field
-##########################
-The hydraulic head field for the time steps specified in the global parameter field is written to a file for every time step.
+### Hydraulic head field
 
-Folder structure
-##########################
--	Folder from which VIC is run. Contains the vic_job.sh and the global parameter file of VIC. The global parameter file of VIC specifies the paths to the VIC input data.
--	../AMBHAS: contains global parameter file, gw_data, hi_ini, gw_observation.dat
--	../AMBHAS_OUT: AMBHAS head files are written into here
+The hydraulic head field for the time steps specified in the global parameter field is written to a file for each NTIME step.
+
+## Folder structure
+
+It is important that the folder structure relative to the folder from which VIC is run is maintained.
+
+-	Folder from which VIC is run. Contains the vic_job.sh and the global parameter file of VIC. The VIC global parameter file of VIC specifies the paths to the VIC input data and VIC output data.
+-	../AMBHAS: contains global parameter file, gw_data, hi_ini, gw_observation.dat, and gw_pumping_DAY_MONTH_YEAR_SECONDS.nc
+-	../AMBHAS_OUT: AMBHAS head files and observational data are written into here
 
 
 
