@@ -175,32 +175,51 @@ BH2 8500.0 2000.0
 The spatial model data is read in via the netcdf file gw_data.nc. The variables are written to file in the order listed below.
 
 The data for each cell required is:
-	-	Sy [-]: specific yield 
-	-	T [m2/day]: transmissivity – a value must be given, even if K is specified
-	-	K [m/day]: hydraulic conductivity – a value must be given, even if T is spcified
-	-	mask: active cells of the model domain are set to 1
-	-	dem [m]: digital elevation model 
-	-	zbase [m]: base of the aquifer in m above datum 
-	-	zriver [m]: elevation of the river elevation, e.g DEM or DEM - 5
-	-	driver [m]: thickness of the river bed, e.g. 1m
-	-	C_eff [1/day]: Conductance for effluent aquifer (river-> aquifer) 
-	-	C_in [1/day]: Conductance for influent aquifer (aquifer -> river)
-	-	C_leak_eff [1/day]: Conductance for leakage cells effluent 	
-	-	C_leak_in [1/day]: Conductance for leakage cells influent 	
-	-	headBC : Head[m] of specific head boundary cells, or -999 for non-specified head boundary nodes 
-	-	river_area [m2]:  River area of cells where a river is present	
-	-	aquifer_map: zones of 1 are unconfined aquifer, and zones of 0 are confined aquifer
+- Sy [-]: specific yield 
+	
+- T [m2/day]: transmissivity – a value must be given, even if K is specified
+	
+- K [m/day]: hydraulic conductivity – a value must be given, even if T is spcified
+	
+- mask: active cells of the model domain are set to 1
+	
+- dem [m]: digital elevation model 
+	
+- zbase [m]: base of the aquifer in m above datum 
+	
+- zriver [m]: elevation of the river elevation, e.g DEM or DEM - 5
+	
+- driver [m]: thickness of the river bed, e.g. 1m
+	
+- C_eff [1/day]: Conductance for effluent aquifer (river-> aquifer) 
+	
+- C_in [1/day]: Conductance for influent aquifer (aquifer -> river)
+	
+- C_leak_eff [1/day]: Conductance for leakage cells effluent 	
+	
+- C_leak_in [1/day]: Conductance for leakage cells influent 	
+	
+- headBC : Head[m] of specific head boundary cells, or -999 for non-specified head boundary nodes 
+	
+- river_area [m2]:  River area of cells where a river is present	
+	
+- quifer_map: zones of 1 are unconfined aquifer, and zones of 0 are confined aquifer
 	
 if the model dimensions is in lat/lon, then the following needs to be specified:
-	-	dist_c_n [m]: distance of the cell center to the cell center of the cell to the north 	
-	-	dist_c_e [m]: distance of the cell center to the cell center of the cell to the east 	
-	-	edge_n[m]: length of the northern edge of the cell 	
-	-	edge_e [m]: length of the eastern edge of the cell 	
-	-	cell_area [m2]: cell area of each cell in 
+- dist_c_n [m]: distance of the cell center to the cell center of the cell to the north 
+	
+- dist_c_e [m]: distance of the cell center to the cell center of the cell to the east 
+	
+- edge_n[m]: length of the northern edge of the cell 	
+	
+- edge_e [m]: length of the eastern edge of the cell 	
+	
+- cell_area [m2]: cell area of each cell in 
 
 for each cell:		
-	-	z_soil  [m]: total soil depth used in the VIC model	
-	-	Sy_soil: specific yield of the soil as used in the VIC model[-]
+- z_soil  [m]: total soil depth used in the VIC model	
+	
+- Sy_soil: specific yield of the soil as used in the VIC model[-]
 	
 	
 ### GW pumping - optional
@@ -213,7 +232,7 @@ The stress period read in through the global parameter file determines how often
 
 The data for each cell and time step required is:
 
-	-	Pumping [m3/day]
+- Pumping [m3/day]
 
 
 ## Output files
