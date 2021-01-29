@@ -353,11 +353,10 @@ runoff(cell_data_struct  *cell,
                     resid_moist[lindex]) {
                     tmp_liq = resid_moist[lindex];
                 }
-                kr[lindex]=pow(((tmp_liq -
-                                        resid_moist[lindex]) /
-                                       (soil_con->max_moist[lindex] -
-                                        resid_moist[lindex])),
-                                      soil_con->expt[lindex]); 
+                kr[lindex] = calc_Q12(Ksat[lindex], tmp_liq,
+                                           resid_moist[lindex],
+                                           soil_con->max_moist[lindex],
+                                           soil_con->expt[lindex]) / Ksat[lindex]; 
 		   if(debug==1){
 					printf("layer %d, kr %f, liq %f, max_moist %f \n ", lindex, kr[lindex], liq[lindex], max_moist[lindex]); 
 			}
@@ -567,9 +566,10 @@ runoff(cell_data_struct  *cell,
                         tmp_liq = resid_moist[lindex];
                     }
         
-        kr[lindex]=pow(((tmp_liq - resid_moist[lindex]) /
-           (soil_con->max_moist[lindex] -resid_moist[lindex])),
-                                          soil_con->expt[lindex]);
+        kr[lindex] = calc_Q12(Ksat[lindex], tmp_liq,
+                                           resid_moist[lindex],
+                                           soil_con->max_moist[lindex],
+                                           soil_con->expt[lindex]) / Ksat[lindex];
         
         dt_recharge=-kr[lindex]*Ksat[lindex] * ((-z-(psi_m-node_depth[lindex]))/
         	(z-node_depth[lindex]));
