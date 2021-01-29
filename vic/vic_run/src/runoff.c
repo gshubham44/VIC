@@ -307,36 +307,40 @@ runoff(cell_data_struct  *cell,
                Compute Drainage between Sublayers
             *************************************/
             /**if the water level is below the soil column, use Q12 as represented in VIC **/
-
-            for (lindex = 0; lindex < options.Nlayer - 1; lindex++) { //for layers 0 and 1
+            for (lindex = 0; lindex < options.Nlayer - 1; lindex++) {
                 /** Brooks & Corey relation for hydraulic conductivity **/
-	              liq_init[lindex]=liq[lindex];//js added for balance calculation
-		            if(debug==1){
-	                  printf("liq_init %d %f \n", lindex, liq[lindex]);
-		            }
 
                 if ((tmp_liq = liq[lindex] - evap[lindex][fidx]) <
                     resid_moist[lindex]) {
                     tmp_liq = resid_moist[lindex];
                 }
-               kr[lindex]=pow(((tmp_liq -
-                                        resid_moist[lindex]) /
-                                       (soil_con->max_moist[lindex] -
-                                        resid_moist[lindex])),
-                                      soil_con->expt[lindex]);
 
-          
-                if (liq[lindex] > resid_moist[lindex]) {
-                    Q12[lindex] = Ksat[lindex] * kr[lindex]; //in mm
+                if (tmp_liq > resid_moist[lindex]) {
+                    Q12[lindex] = calc_Q12(Ksat[lindex], tmp_liq,
+                                           resid_moist[lindex],
+                                           soil_con->max_moist[lindex],
+                                           soil_con->expt[lindex]);
+                                           
+                    kr[lindex] = Q12[lindex] / Ksat[lindex];
+										   
+					          
+										   
                 }
                 else {
                     Q12[lindex] = 0.;
+					
+                    kr[lindex] = calc_Q12(Ksat[lindex], tmp_liq,
+                                           resid_moist[lindex],
+                                           soil_con->max_moist[lindex],
+                                           soil_con->expt[lindex]) / Ksat[lindex];
                 }
-				if(debug==1){
-					printf("layer %d, kr %f, Q12 %f, liq %f max_moist %f \n", lindex, kr[lindex],  Q12[lindex], liq[lindex], max_moist[lindex]);   
-				}
-            }
- 
+				
+				
+                if(debug==1){
+			printf("layer %d, kr %f, Q12 %f, liq %f max_moist %f \n", lindex, kr[lindex],  Q12[lindex], liq[lindex], max_moist[lindex]);   
+		}
+	}
+            
             //set relative permeability for the bottom layer
             lindex=options.Nlayer - 1;
 
@@ -902,4 +906,24 @@ compute_runoff_and_asat(soil_con_struct *soil_con,
     if (*runoff < 0.) {
         *runoff = 0.;
     }
+}
+
+/******************************************************************************
+* @brief    Calculate drainage between two layers
+******************************************************************************/
+double
+calc_Q12(double Ksat,
+         double init_moist,
+         double resid_moist,
+         double max_moist,
+         double expt)
+{
+    double Q12;
+
+    Q12 = init_moist - pow(pow(init_moist - resid_moist, 1.0 - expt) -
+                           Ksat /
+                           pow(max_moist - resid_moist, expt) * (1.0 - expt),
+                           1.0 / (1.0 - expt)) - resid_moist;
+
+    return Q12;
 }

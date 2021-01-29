@@ -29,6 +29,7 @@
 /************************ end AMBHAS code ************************/
 
 #include <vic_driver_image.h>
+#include <rout.h>   // Routing routine (extension)
 
 
 size_t              NF, NR;
@@ -38,6 +39,7 @@ size_t             *mpi_map_mapping_array = NULL;
 all_vars_struct    *all_vars = NULL;
 force_data_struct  *force = NULL;
 dmy_struct         *dmy = NULL;
+dmy_struct          dmy_state;
 filenames_struct    filenames;
 filep_struct        filep;
 domain_struct       global_domain;
@@ -63,12 +65,17 @@ veg_con_map_struct *veg_con_map = NULL;
 veg_con_struct    **veg_con = NULL;
 veg_hist_struct   **veg_hist = NULL;
 veg_lib_struct    **veg_lib = NULL;
-metadata_struct     state_metadata[N_STATE_VARS];
+metadata_struct     state_metadata[N_STATE_VARS + N_STATE_VARS_EXT];
 metadata_struct     out_metadata[N_OUTVAR_TYPES];
 save_data_struct   *save_data;  // [ncells]
 double           ***out_data = NULL;  // [ncells, nvars, nelem]
 stream_struct      *output_streams = NULL;  // [nstreams]
 nc_file_struct     *nc_hist_files = NULL;  // [nstreams]
+
+// Extensions
+rout_struct         rout; // Routing routine (extension)
+
+//AMBHAS variables
 double *temp_r; // [local_domain.ncells_active];
 double *temp_gw; // [local_domain.ncells_active];
 double *temp_baseflow; //[local_domain.ncells_active];
@@ -156,20 +163,27 @@ main(int    argc,
     // allocate memory
     vic_alloc();
     printf("vic alloc \n");
+    // allocate memory for routing
+    rout_alloc();   // Routing routine (extension)
+
     // initialize model parameters from parameter files
     vic_image_init();
     printf("vic_image_init \n");
+    // initialize routing parameters from parameter files
+    rout_init();    // Routing routine (extension)
+
     // populate model state, either using a cold start or from a restart file
-    vic_populate_model_state();
+    vic_populate_model_state(&(dmy[0]));
     printf("vic_populate_model_state \n");
     // initialize output structures
     vic_init_output(&(dmy[0]));
     printf("vic_init_output \n");
     // Initialization is complete, print settings
     log_info(
-        "Initialization is complete, print global param and options structures");
+        "Initialization is complete, print global param, parameters and options structures");
     print_global_param(&global_param);
     print_option(&options);
+    print_parameters(&param);
 
     // stop init timer
     timer_stop(&(global_timers[TIMER_VIC_INIT]));
@@ -455,11 +469,13 @@ main(int    argc,
 		/************************ end AMBHAS code ************************/
 		
 		// read forcing data
+	        timer_continue(&(global_timers[TIMER_VIC_FORCE]));
 		vic_force();
-			if (debug == 1){
-				printf("vic_force has been called %d \n", mpi_rank);
-			}
-
+		if (debug == 1){
+			printf("vic_force has been called %d \n", mpi_rank);
+		}
+        	timer_stop(&(global_timers[TIMER_VIC_FORCE]));
+				
 		// run vic over the domain
 		vic_image_run(&(dmy[current]));
 			if (debug == 1){
@@ -656,15 +672,19 @@ main(int    argc,
 		/************************ end AMBHAS code ************************/
 			  
 			// Write history files
+	
+	                timer_continue(&(global_timers[TIMER_VIC_WRITE]));
 			vic_write_output(&(dmy[current]));
 			if (debug == 1){
-						printf("vic_write output has been called \n");
+				printf("vic_write output has been called \n");
 			}
+	
+			timer_stop(&(global_timers[TIMER_VIC_WRITE]));
 
 			// Write state file
-			if (check_save_state_flag(current)) {
+        if (check_save_state_flag(current, &dmy_state)) {
 				debug("writing state file for timestep %zu", current);
-				vic_store(&(dmy[current]), state_filename);
+            			vic_store(&dmy_state, state_filename);
 				debug("finished storing state file: %s", state_filename)
 			}
 			if (debug == 1){
@@ -692,6 +712,9 @@ main(int    argc,
     timer_start(&(global_timers[TIMER_VIC_FINAL]));
     // clean up
     vic_image_finalize();
+
+    // clean up routing
+    rout_finalize();    // Routing routine (extension)
 
     // finalize MPI
     status = MPI_Finalize();
