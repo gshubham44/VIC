@@ -38,11 +38,11 @@ SHAREDIMAGEPATH = ../shared_image
 # VIC RUN PATH
 VICPATH = ../../vic_run
 
-# AMBHAS PATH
-AMBHASPATH=../../extensions/AMBHAS
-
 # VIC EXTENTIONS PATH
 EXTPATH = ../../extensions
+
+# AMBHAS PATH
+AMBHASPATH = ../../extensions/AMBHAS
 
 # Set the routing model extension
 # | Level      | Value                              |

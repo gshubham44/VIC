@@ -309,6 +309,11 @@ runoff(cell_data_struct  *cell,
             /**if the water level is below the soil column, use Q12 as represented in VIC **/
             for (lindex = 0; lindex < options.Nlayer - 1; lindex++) {
                 /** Brooks & Corey relation for hydraulic conductivity **/
+                
+ 	              liq_init[lindex]=liq[lindex];//js added for balance calculation
+		            if(debug==1){
+	                  printf("liq_init %d %f \n", lindex, liq[lindex]);
+		            }
 
                 if ((tmp_liq = liq[lindex] - evap[lindex][fidx]) <
                     resid_moist[lindex]) {
