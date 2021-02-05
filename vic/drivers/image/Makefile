@@ -41,6 +41,9 @@ VICPATH = ../../vic_run
 # VIC EXTENTIONS PATH
 EXTPATH = ../../extensions
 
+# AMBHAS PATH
+AMBHASPATH = ../../extensions/AMBHAS
+
 # Set the routing model extension
 # | Level      | Value                              |
 # |----------  |---------------------------------   |
@@ -77,14 +80,15 @@ HOSTNAME := $(shell uname -n)
 # | WARNING   | < 30             |
 # | INFO      | < 20             |
 # | DEBUG     | < 10             |
-LOG_LVL = 5
+LOG_LVL = 50
 
 # set includes
 INCLUDES = -I ${DRIVERPATH}/include \
 		   -I ${VICPATH}/include \
 		   -I ${SHAREDPATH}/include \
 		   -I ${SHAREDIMAGEPATH}/include \
-		   -I ${EXTPATH}/${ROUT}/include
+		   -I ${EXTPATH}/${ROUT}/include \
+		   -I ${AMBHASPATH}		
 
 # Uncomment to include debugging information
 CFLAGS  =  ${INCLUDES} ${NC_CFLAGS} -ggdb -O0 -Wall -Wextra -std=c99 \
@@ -93,6 +97,7 @@ CFLAGS  =  ${INCLUDES} ${NC_CFLAGS} -ggdb -O0 -Wall -Wextra -std=c99 \
 					 -DGIT_VERSION=\"$(GIT_VERSION)\" \
 					 -DUSERNAME=\"$(USER)\" \
 					 -DHOSTNAME=\"$(HOSTNAME)\"
+
 
 ifeq (true, ${TRAVIS})
 # Add extra debugging for builds on travis
@@ -113,14 +118,16 @@ HDRS = \
 	$(wildcard ${DRIVERPATH}/include/*.h) \
 	$(wildcard ${SHAREDPATH}/include/*.h) \
 	$(wildcard ${SHAREDIMAGEPATH}/include/*.h) \
-	$(wildcard ${EXTPATH}/${ROUT}/include/*.h)
+	$(wildcard ${EXTPATH}/${ROUT}/include/*.h) \
+	$(wildcard ${AMBHASPATH}/*.h)
 
 SRCS = \
 	$(wildcard ${VICPATH}/src/*.c) \
 	$(wildcard ${DRIVERPATH}/src/*.c) \
 	$(wildcard ${SHAREDPATH}/src/*.c) \
-	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \
-	$(wildcard ${EXTPATH}/${ROUT}/src/*.c)
+	$(wildcard ${SHAREDIMAGEPATH}/src/*.c) \ 
+	$(wildcard ${EXTPATH}/${ROUT}/src/*.c) \
+	$(wildcard ${AMBHASPATH}/*.c)
 
 OBJS = $(SRCS:%.o=%.c)
 
@@ -143,7 +150,7 @@ clean::
 	\rm -rf ${COMPEXE}${EXT} ${COMPEXE}${EXT}.dSYM
 
 model: $(OBJS)
-	$(MPICC) -o ${COMPEXE}${EXT} $(OBJS) $(CFLAGS) $(LIBRARY)
+	$(MPICC) -g -o ${COMPEXE}${EXT} $(OBJS) $(CFLAGS) $(LIBRARY)
 
 # -------------------------------------------------------------
 # tags

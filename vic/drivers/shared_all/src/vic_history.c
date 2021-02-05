@@ -264,6 +264,8 @@ get_default_outvar_aggtype(unsigned int varid)
     case OUT_SNOW_COVER_BAND:
     case OUT_SNOW_DEPTH_BAND:
     case OUT_SWE_BAND:
+    case OUT_Z:
+    case OUT_SY:
         agg_type = AGG_TYPE_END;
         break;
     // AGG_TYPE_SUM
@@ -315,6 +317,11 @@ get_default_outvar_aggtype(unsigned int varid)
     case OUT_SURFT_FBFLAG:
     case OUT_TCAN_FBFLAG:
     case OUT_TFOL_FBFLAG:
+    case OUT_RECHARGE://is this necessary??
+    case OUT_GW_INFLOW://is this necessary??
+    case OUT_BASEFLOW_AQ://is this necessary??
+    case OUT_Q1://is this necessary??
+    case OUT_Q2://is this necessary??
         agg_type = AGG_TYPE_SUM;
         break;
     default:

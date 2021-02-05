@@ -49,6 +49,7 @@ vic_force(void)
     extern veg_hist_struct   **veg_hist;
     extern parameters_struct   param;
     extern param_set_struct    param_set;
+    extern int SIM_MODE;
 
     double                    *t_offset = NULL;
     double                    *dvar = NULL;
@@ -84,8 +85,22 @@ vic_force(void)
             check_nc_status(status, "Error closing %s",
                             filenames.forcing[0].nc_filename);
             // open new forcing file
-            sprintf(filenames.forcing[0].nc_filename, "%s%4d.nc",
+           printf("SIM_MODE %d \n", SIM_MODE);
+            
+            //if SIM_MODE==1: time variant. use forcing file of each year
+            if (SIM_MODE==1){
+              sprintf(filenames.forcing[0].nc_filename, "%s%4d.nc",
                     filenames.f_path_pfx[0], dmy[current].year);
+              printf(" forcing file name %s \n", filenames.forcing[0]);
+            }
+            
+            //if SIM_MODE==0: steady state. use the forcing file of the first year for each year
+            if(SIM_MODE==0){
+              sprintf(filenames.forcing[0].nc_filename, "%s%4d.nc",
+                    filenames.f_path_pfx[0], dmy[0].year);
+              printf(" forcing file name %s \n", filenames.forcing[0]);
+            }
+            
             status = nc_open(filenames.forcing[0].nc_filename, NC_NOWRITE,
                              &(filenames.forcing[0].nc_id));
             check_nc_status(status, "Error opening %s",

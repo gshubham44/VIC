@@ -67,7 +67,9 @@ surface_fluxes(bool                 overstory,
                double               lag_one,
                double               sigma_slope,
                double               fetch,
-               double              *CanopLayerBnd)
+               double              *CanopLayerBnd,
+	       double 		    Sy,
+	       double 		    z)
 {
     extern veg_lib_struct   *vic_run_veg_lib;
     extern option_struct     options;
@@ -1080,7 +1082,7 @@ surface_fluxes(bool                 overstory,
     (*inflow) = ppt;
 
     ErrorFlag = runoff(cell, energy, soil_con, ppt, soil_con->frost_fract,
-                       options.Nnode);
+                       options.Nnode, Sy, z);
 
     return(ErrorFlag);
 }

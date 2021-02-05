@@ -41,10 +41,13 @@ vic_run(force_data_struct   *force,
         lake_con_struct     *lake_con,
         soil_con_struct     *soil_con,
         veg_con_struct      *veg_con,
-        veg_lib_struct      *veg_lib)
+        veg_lib_struct      *veg_lib,
+	double Sy,
+	double z)
 {
     extern option_struct     options;
     extern parameters_struct param;
+
 
     char                     overstory;
     size_t                   l;
@@ -92,7 +95,9 @@ vic_run(force_data_struct   *force,
     veg_var_struct          *veg_var;
     energy_bal_struct       *energy;
     snow_data_struct        *snow;
-
+    
+    extern RUNOFF_PRINT_FLAG;
+    
     out_prec = calloc(options.SNOW_BAND, sizeof(*out_prec));
     check_alloc_status(out_prec, "Memory allocation error.");
     out_rain = calloc(options.SNOW_BAND, sizeof(*out_rain));
@@ -103,7 +108,7 @@ vic_run(force_data_struct   *force,
     check_alloc_status(Melt, "Memory allocation error.");
     snow_inflow = calloc(options.SNOW_BAND, sizeof(*snow_inflow));
     check_alloc_status(snow_inflow, "Memory allocation error.");
-
+    
     // assign vic_run_veg_lib to veg_lib, so that the veg_lib for the correct
     // grid cell is used within vic_run. For simplicity sake, use vic_run_veg_lib
     // everywhere within vic_run
@@ -141,6 +146,9 @@ vic_run(force_data_struct   *force,
     **************************************************/
     for (iveg = 0; iveg <= Nveg; iveg++) {
         /** Solve Veg Tile only if Coverage Greater than 0% **/
+        /* if (RUNOFF_PRINT_FLAG==1){	        
+        	//printf("_vegetation_band_no_%d", iveg);//js added
+       }*/
         if (veg_con[iveg].Cv > 0.0) {
             Cv = veg_con[iveg].Cv;
             Nbands = options.SNOW_BAND;
@@ -315,6 +323,9 @@ vic_run(force_data_struct   *force,
                        Solve ground surface fluxes
                     ******************************/
 
+            /*  if (RUNOFF_PRINT_FLAG==1){
+		             // printf("_Elevation_band_no_%d",band); //js added
+               }*/
                     lag_one = veg_con[iveg].lag_one;
                     sigma_slope = veg_con[iveg].sigma_slope;
                     fetch = veg_con[iveg].fetch;
@@ -334,7 +345,7 @@ vic_run(force_data_struct   *force,
                                                energy, gp, cell, snow,
                                                soil_con, veg_var, lag_one,
                                                sigma_slope, fetch,
-                                               veg_con[iveg].CanopLayerBnd);
+                                               veg_con[iveg].CanopLayerBnd, Sy, z);
 
                     if (ErrorFlag == ERROR) {
                         return (ERROR);
