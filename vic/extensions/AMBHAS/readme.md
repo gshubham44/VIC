@@ -5,7 +5,7 @@
 This documents describes the input files for the coupled VIC-AMBHAS model. AMBHAS is a 2D lateral groundwater model and is built into the image version of VIC 5.0.1. VIC calculates a groundwater recharge as a function of soil moisture and water table depth and passes this into AMBHAS. AMBHAS calculates lateral groundwater flow, groundwater baseflow and interacts with the land surface. AMBHAS feeds back the water table depth and groundwater baseflow to VIC. There is also an option of abstracting groundwater from the aquifer, specified through model input. The model can be run in a dynamic steady state, using one year of forcing data or as time-variant. 
 This version of VIC will only work as the coupled version of VIC-AMBHAS, and only with the image version of VIC.
 To run the standard version of VIC without the addition of groundwater, please use the version directly from the VIC repository: https://github.com/UW-Hydro/VIC.
-If you make use of this model, please acknowledge Scheidegger et al, submitted, and the VIC papers: Hamman et al., 2018 (DOI:10.5194/gmd-11-3481-2018) and Liang et al., 1994 (http://dx.doi.org/10.1029/94jd00483).
+If you make use of this model, please acknowledge Scheidegger et al., 2021 (https://doi.org/10.3390/w13050663), and the VIC papers: Hamman et al., 2018 (DOI:10.5194/gmd-11-3481-2018) and Liang et al., 1994 (http://dx.doi.org/10.1029/94jd00483).
 
 ## Preparation of input files
 
