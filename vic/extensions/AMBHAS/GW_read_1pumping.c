@@ -1,7 +1,7 @@
 
 /******************************************************************************
 * GW_read_1pumping
-* function that reads initial heads
+* function that pumping in m3/d
 *****************************************************************************/
 #include "GW_global_vars.h"
 #include "netcdf.h"
@@ -19,7 +19,8 @@ int GW_read_1pumping(const gw_global_data_struct *g, gw_data_struct *d, int year
 	char file_name[100];
 
 	//printf("today is: %d. %d. %d\n", g->DAY,g->MONTH,g->YEAR);
-	sprintf(file_name, "..//AMBHAS//gw_pumping_%d_%d_%d_%d.nc",  year,  month, day, dayseconds);
+	sprintf(file_name, "..//AMBHAS//gw_pumping_%d_%d_%d_%d.nc",  year,  month);
+ 	//sprintf(file_name, "..//AMBHAS//gw_pumping_%d_%d_%d_%d.nc",  year,  month, day, dayseconds);
 	printf("***pumping name %s \n", file_name);
 
 
