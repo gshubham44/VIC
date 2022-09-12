@@ -41,6 +41,7 @@ The first string of the input file of each line specifies the parameter, followe
 5. Cell size in x. If the model grid is in lat/lon the cell size in lon is given (DLON), if it is a metric grid, then the cell size in m is given. The spacing for both needs to be regular.
 6. Length of each model time step (DT) in unit of days. This needs to be the same as in VIC.
 7. Output options for the hydraulic head field to the netcdf file h_n.nc, where n is the time step:
+
 	0: hydraulic head field is written to out every time step	
 	
 	1: hydraulic head field is only written out for the last time step	
@@ -48,6 +49,7 @@ The first string of the input file of each line specifies the parameter, followe
 	n: hydraulic head field is written out every n time steps
 	
 8. Simulation Mode: 
+
   0: dynamic steady state using the forcing data of the first year and pumping of the first time step
   
   1: transient simulation 
@@ -55,32 +57,38 @@ The first string of the input file of each line specifies the parameter, followe
   3: dynamic steady state using the forcing data of the first year and pumping of the first year
   
 9. Initial conditions for hydraulic head.
+
 	0: DEM - 10m. No initial head file needs to be specified
 	
 	1: file for initial hydraulic heads is read in specified as filename.nc	
 	
 10. Option if hydraulic conductivity or transmissivity are read in.
+
 	0: K [m/day]	
 	
 	1: T [m2/day]
 	
 11. Confined or unconfined aquifer. Regardless of choice, the soil and the aquifer are in connection. This defines if the transmissivity is calculated using the K * aquifer thickness or K *(head - the base of the aquifer).
+
 	0: unconfined
 	
 	1: confined	
 	
 12. Flag, if the model dimensions are in m or decimal degrees. If the grid is in lat/lon, then the cell dimensions and area for each cell need to be read in gw_data.nc.
+
 	0: Regular grid using m	
 	
 	1: Regular grid using decimal degrees. The cell dimensions for each cell need to be read in gw_data.nc	
 	
-13. The pumping flag determines whether groundwater pumping time series are read in
+13. The pumping flag determines whether groundwater pumping time series are read in:
+
   0: no pumping time series is read in 
   
   1: pumping time series is read in 
   
 14. Stress period for which one pumping file is valid. This has to be a multiplier of DT
-15. Flag if the specific yield varies between the soil and the aquifer
+15. Flag if the specific yield varies between the soil and the aquifer:
+
   0: one value of Sy across the entire profile read in gw_data.nc 
   
   1: Sy has one value in the soil and one in the aquifer, with a linear transition to twice the soil thickness. The values to be read in gw_data.nc. 
@@ -132,8 +140,8 @@ MAX_RECHARGE_FRACTION 0.01
 1. number of rows (lat) 
 2. number of cols (rows) 
 3. number of time steps output is written
-4. lat grid spacing, if irregular set to 1
-5. lon grid spacing, if irregular set to 1
+4. lat grid spacing
+5. lon grid spacing
 6. time step (in days)
 7. Output option for h field in out_data.nc 0: every time step, 1: last time step, int: every int time step 
 8. SimulationMode 0: dynamic steady state using the forcing data of the first year, 1: transient simulation
@@ -226,7 +234,7 @@ for each cell:
 
 One file every PUMPING_STRESS_PERIOD is read in. 
 
-The filename is gw_pumping_DAY_MONTH_YEAR_SECONDS.nc, for which the date is specified in integers. 
+The filename is gw_pumping_YEAR_MONTH.nc, for which the date is specified in integers. 
 
 The stress period read in through the global parameter file determines how often GW pumping is read in.
 
